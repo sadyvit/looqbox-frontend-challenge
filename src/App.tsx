@@ -4,6 +4,8 @@ import { ConfigProvider, Layout } from 'antd';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import About from './pages/About';
+import Details from './pages/Details';
+
 
 
 const { Content } = Layout;
@@ -25,6 +27,7 @@ const App: React.FC = () => (
           <Routes>
             <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/details/:name" element={<Details />} />
             <Route path="/about" element={<About />} />
           </Routes>
         </Content>

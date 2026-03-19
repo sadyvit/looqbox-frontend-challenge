@@ -1,10 +1,14 @@
 import React from 'react';
-import { Typography } from 'antd'
+import { Typography, Alert, Row, Col } from 'antd'
 import SearchBar from '../components/SearchBar';
+import { usePokemonSearch } from '../hooks/usePokemon';
+import PokemonCard from '../components/PokemonCard';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const Home: React.FC = () => {
+  const { result: searchResult, loading: searching, error: searchError, search, clear } = usePokemonSearch();
+
   return (
     <div style={{ minHeight: '100vh', background: '#f7f8fc' }}>
       <div style={{
@@ -34,6 +38,7 @@ const Home: React.FC = () => {
           border: '30px solid rgba(255, 255, 255, 0.04)',
           pointerEvents: 'none'
         }} />
+
         <Title style={{
           color: '#fff',
           fontFamily: "'Nunito', sans-serif",
@@ -42,18 +47,55 @@ const Home: React.FC = () => {
         }}>
           ⚡ Pokedex
         </Title>
-        <Title style={{
+        <Text style={{
           color: 'rgba(255, 255, 255, 0.9)',
           fontFamily: "'Nunito', sans-serif",
-          fontSize: 14,
+          fontSize: 16,
+          marginBottom: 32,
+          display: 'block'
         }}>
           Descubra e explore o mundo dos Pokémon!
-        </Title>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          {/* Implementar Hooks para buscar Pokémon por nome ou número, exibindo resultados em tempo real. */}
-          {/* <SearchBar onSearch={() => {}} onClear={() => {}} /> */}
-        </div>
+        </Text>
 
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <SearchBar onSearch={search} onClear={clear} loading={searching} />
+        </div>
+      </div>
+
+      <div style={{ margin: '0 auto', padding: '32px 24px', maxWidth: 1200 }}>
+        {searchError && (
+          <Alert
+            message={searchError}
+            type='error'
+            showIcon
+            closable
+            onClose={clear}
+            style={{ marginBottom: 24, borderRadius: 14 }}
+          />
+        )}
+
+        {searchResult && !searching && (
+          <>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 20
+            }}>
+              <Title level={4} style={{ margin: 0, fontFamily: "'Nunito', sans-serif" }}>
+                Resultado da pesquisa
+              </Title>
+              <Text style={{ fontFamily: "'Nunito', sans-serif", cursor: 'pointer', color: '#EF5350', fontWeight: 700 }} onClick={clear}>
+                ← Voltar para lista
+              </Text>
+            </div>
+            <Row>
+              <Col xs={12} sm={8} md={6} lg={4}>
+                <PokemonCard pokemon={searchResult} />
+              </Col>
+            </Row>
+          </>
+        )}
       </div>
     </div>
   )

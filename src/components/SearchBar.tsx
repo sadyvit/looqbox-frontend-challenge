@@ -26,8 +26,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, onClear, loading }) => 
   return (
     <div style={{
       display: 'flex',
-      maxWidth: 400,
+      maxWidth: 500,
       width: '100%',
+      gap: 8
     }}>
       <Input
         placeholder="Pesquise Pokémon por nome ou número..."
@@ -48,7 +49,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, onClear, loading }) => 
           border: '2px solid rgba(0,0,0,0.07)',
           borderRadius: 50,
           fontFamily: "'Nunito', sans-serif",
-          boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
           fontSize: 15,
         }}
         aria-label='Procurar Pokémon'
