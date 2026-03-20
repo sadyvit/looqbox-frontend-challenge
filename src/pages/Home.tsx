@@ -1,12 +1,14 @@
 import React from 'react';
-import { Typography, Alert, Row, Col } from 'antd'
+import { Typography, Alert, Row, Col, Spin, Empty, Pagination } from 'antd'
 import SearchBar from '../components/SearchBar';
-import { usePokemonSearch } from '../hooks/usePokemon';
+import { usePokemonList, usePokemonSearch } from '../hooks/usePokemon';
 import PokemonCard from '../components/PokemonCard';
+import ErrorMessage from '../components/ErrorMessage';
 
 const { Title, Text } = Typography;
 
 const Home: React.FC = () => {
+  const { pokemon, loading, error, total, page, setPage, pageSize } = usePokemonList();
   const { result: searchResult, loading: searching, error: searchError, search, clear } = usePokemonSearch();
 
   return (
@@ -94,6 +96,67 @@ const Home: React.FC = () => {
                 <PokemonCard pokemon={searchResult} />
               </Col>
             </Row>
+          </>
+        )}
+
+        {!searchResult && (
+          <>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 20
+            }}
+            >
+              <Title level={4} style={{ fontSize: 16, fontFamily: "'Space Mono', monospace", color: '#333', margin: 0 }}>
+                Todos Pokemons
+                <Text style={{ fontSize: 14, color: '#999', fontWeight: 400, marginLeft: 8 }}>
+                  {total} total
+                </Text>
+              </Title>
+              <Text style={{ fontSize: 13, fontFamily: "'Space Mono', monospace", color: '#999' }}>
+                Página {page} de {Math.ceil(total / pageSize)}
+              </Text>
+            </div>
+
+            {loading && (
+              <div style={{ textAlign: 'center', padding: '80px 0' }}>
+                <Spin size='large' tip="Carregando..." />
+              </div>
+            )}
+
+            {error && <ErrorMessage message={error} onRetry={() => setPage(page)} />}
+
+            {!loading && !error && pokemon.length === 0 && (
+              <Empty description="Nenhum Pokémon encontrado" />
+            )}
+
+            {!loading && !error && (
+              <>
+                <Row gutter={[16, 16]}>
+                  {pokemon.map((p) => (
+                    <Col key={p.id} xs={12} sm={8} md={6} lg={4}>
+                      <PokemonCard pokemon={p} />
+                    </Col>
+                  ))}
+                </Row>
+                <div style={{ marginTop: 40, textAlign: 'center' }}>
+                  <Pagination
+                    current={page}
+                    total={total}
+                    pageSize={pageSize}
+                    onChange={setPage}
+                    showSizeChanger={false}
+                    showQuickJumper
+                    itemRender={(_, type, element) => {
+                      if (type === 'prev') return <span style={{ fontWeight: 700 }}>‹</span>
+                      if (type === 'next') return <span style={{ fontWeight: 700 }}>›</span>
+                      return element;
+                    }}
+                  />
+                </div>
+              </>
+            )}
           </>
         )}
       </div>

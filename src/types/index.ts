@@ -68,6 +68,21 @@ export interface PokemonAbility {
   slot: number;
 }
 
+export interface PokemonSpecies {
+  flavor_text_entries: {
+    flavor_text: string;
+    language: { name: string }
+    version: { name: string }
+  }[];
+  genera: {
+    genus: string;
+    language: { name: string }
+  }[];
+  color: { name: string }
+  is_legendary: boolean;
+  is_mythical: boolean;
+}
+
 export type TypeName =
   | 'normal' | 'fire' | 'water' | 'electric' | 'grass' | 'ice'
   | 'fighting' | 'poison' | 'ground' | 'flying' | 'psychic' | 'bug'

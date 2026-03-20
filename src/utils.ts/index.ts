@@ -28,3 +28,8 @@ export const getTypeColor = (type: string): string => {
 export const formatPokemonId = (id: number): string => {
   return `#${id.toString().padStart(4, '0')}`;
 }
+
+export const getIdFromUrl = (url: string): number => {
+  const parts = url.split('/').filter(Boolean);
+  return parseInt(parts[parts.length - 1], 10);
+}

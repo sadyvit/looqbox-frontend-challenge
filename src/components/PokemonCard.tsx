@@ -21,7 +21,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon }) => {
 
   return (
     <Card
-      onClick={() => navigate(`details/${pokemon.name}`)}
+      onClick={() => navigate(`/details/${pokemon.name}`)}
       hoverable
       style={{
         borderRadius: 20,

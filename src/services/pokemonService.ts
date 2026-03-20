@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Pokemon, PokemonListResponse } from '../types';
+import { Pokemon, PokemonListResponse, PokemonSpecies } from '../types';
 
 const API_BASE_URL = 'https://pokeapi.co/api/v2';
 
@@ -22,5 +22,9 @@ export const pokemonService = {
     return data;
   },
 
+  getSpecies: async (nameOrId: string | number): Promise<PokemonSpecies> => {
+    const { data } = await api.get<PokemonSpecies>(`/pokemon-species/${nameOrId}`);
+    return data;
+  },
 
 }
