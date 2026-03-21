@@ -53,7 +53,7 @@ const Details: React.FC = () => {
 
   const totalStats = pokemon.stats.reduce((sum, s) => sum + s.base_stat, 0);
 
-  const description = species?.flavor_text_entries.find((e) => e.language.name === 'en')?.flavor_text.replace(/\f/g, ' ') || "No description available";
+  const description = species?.flavor_text_entries.find((e) => e.language.name === 'en')?.flavor_text.replace(/\f/g, ' ') || "Descrição Indisponível";
 
 
   return (
@@ -138,7 +138,7 @@ const Details: React.FC = () => {
 
             </div>
           </div>
-          <div style={{ position: 'relative' }}>
+          {image ? (<div style={{ position: 'relative' }}>
             <Button
               onClick={() => setShiny(!shiny)}
               icon={<StarFilled />}
@@ -169,7 +169,19 @@ const Details: React.FC = () => {
                 marginTop: 20,
               }}
             />
-          </div>
+          </div>) : (
+            <Text
+              style={{
+                display: 'block',
+                color: '#000',
+                fontSize: 11,
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: 0.8
+              }}
+            >Imagem indisponível
+            </Text>
+          )}
         </div>
       </div>
       <div style={{
@@ -221,7 +233,7 @@ const Details: React.FC = () => {
             items={[
               {
                 key: 'stats',
-                label: '📊 stats',
+                label: '📊 status',
                 children: (
                   <Row gutter={32}>
                     <Col xs={24} md={12}>
@@ -237,56 +249,66 @@ const Details: React.FC = () => {
               },
               {
                 key: 'abilities',
-                label: `${getEmojiFromColor(color)} abilities`,
+                label: `${getEmojiFromColor(color)} Habilidades`,
                 children: (
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                    {pokemon.abilities.map((a) => (
-                      <Card
-                        key={a.ability.name}
-                        size='small'
-                        style={{
-                          borderRadius: '12',
-                          border: `1px solid ${a.isHidden ? '#9E9E9E' : `${color}`}`,
-                          background: `${a.isHidden ? '#9E9E9E' : `${color}`}`
-                        }}
-                      >
-                        <Text style={{ fontWeight: 700, textTransform: 'capitalize', fontFamily: "'Nunito', sans-serif" }}>
-                          {a.ability.name}
-                        </Text>
-                        {a.isHidden && (
-                          <Tag style={{ marginLeft: 8, fontSize: 10 }} color='default'>
-                            Hidden
-                          </Tag>
-                        )}
-                      </Card>
-                    ))}
+                    {pokemon.abilities?.length ? (
+                      pokemon.abilities.map((a) => (
+                        <Card
+                          key={a.ability.name}
+                          size='small'
+                          style={{
+                            borderRadius: '12',
+                            border: `1px solid ${a.isHidden ? '#9E9E9E' : `${color}`}`,
+                            background: `${a.isHidden ? '#9E9E9E' : `${color}`}`
+                          }}
+                        >
+                          <Text style={{ fontWeight: 700, textTransform: 'capitalize', fontFamily: "'Nunito', sans-serif" }}>
+                            {a.ability.name}
+                          </Text>
+                          {a.isHidden && (
+                            <Tag style={{ marginLeft: 8, fontSize: 10 }} color='default'>
+                              Hidden
+                            </Tag>
+                          )}
+                        </Card>
+                      ))
+                    ) : (
+                      <Text style={{ color: '#999' }}>Habilidades não encontradas</Text>
+                    )}
                   </div>
                 ),
               },
               {
                 key: 'moves',
-                label: `⚔️ moves`,
+                label: `⚔️ Ataques`,
                 children: (
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', maxHeight: 300, overflow: 'auto' }}>
-                    {pokemon.moves.map((m) => (
-                      <Tag
-                        key={m.move.name}
-                        style={{
-                          border: `1px solid ${color}44`,
-                          borderRadius: 20,
-                          fontFamily: "'Nunito', sans-serif",
-                          fontWeight: 600,
-                          fontSize: 12,
-                          textTransform: 'capitalize',
-                        }}
-                      >
-                        {m.move.name}
-                      </Tag>
-                    ))}
-                    {pokemon.moves.length > 40 && (
-                      <Text style={{ color: '#999', fontSize: 12, alignSelf: 'center' }}>
-                        + {pokemon.moves.length - 40} More moves
-                      </Text>
+                    {pokemon.moves?.length ? (
+                      <>
+                        {pokemon.moves.slice(0, 40).map((m) => (
+                          <Tag
+                            key={m.move.name}
+                            style={{
+                              border: `1px solid ${color}44`,
+                              borderRadius: 20,
+                              fontFamily: "'Nunito', sans-serif",
+                              fontWeight: 600,
+                              fontSize: 12,
+                              textTransform: 'capitalize',
+                            }}
+                          >
+                            {m.move.name}
+                          </Tag>
+                        ))}
+                        {pokemon.moves.length > 40 && (
+                          <Text style={{ color: '#999', fontSize: 12, alignSelf: 'center' }}>
+                            + {pokemon.moves.length - 40} More moves
+                          </Text>
+                        )}
+                      </>
+                    ) : (
+                      <Text style={{ color: '#999' }}>Ataques não encontrados</Text>
                     )}
                   </div>
                 ),

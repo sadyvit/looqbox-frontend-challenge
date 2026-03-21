@@ -67,7 +67,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon }) => {
         {formatPokemonId(pokemon.id)}
       </Text>
       <div style={{ textAlign: 'center', margin: '8px 0' }}>
-        <img
+        {image ? (<img
           src={image || "imagem indisponível"}
           alt={pokemon.name}
           style={{
@@ -78,7 +78,9 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon }) => {
           }}
           className='pokemon-img'
           loading='lazy'
-        />
+        />) : (
+          <Text style={{ display: 'block', color: '#000', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.8 }}>Imagem indisponível</Text>
+        )}
       </div>
       <Title
         level={5}
