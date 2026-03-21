@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Typography, Alert, Row, Col, Spin, Empty, Pagination } from 'antd'
 import SearchBar from '../components/SearchBar';
 import { usePokemonList, usePokemonSearch } from '../hooks/usePokemon';
@@ -10,6 +10,21 @@ const { Title, Text } = Typography;
 const Home: React.FC = () => {
   const { pokemon, loading, error, total, page, setPage, pageSize } = usePokemonList();
   const { result: searchResult, loading: searching, error: searchError, search, clear } = usePokemonSearch();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft' && page !== 1) {
+        setPage(page - 1)
+      } else if (e.key === 'ArrowRight') {
+        setPage(page + 1)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [page, setPage]);
 
   return (
     <div style={{ minHeight: '100vh', background: '#f7f8fc' }}>

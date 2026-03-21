@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePokemonDetails } from '../hooks/usePokemon';
-import { formatPokemonId, getTypeColor } from '../utils.ts';
+import { formatPokemonId, getEmojiFromColor, getTypeColor } from '../utils.ts';
 import { PokemonSpecies } from '../types';
 import { pokemonService } from '../services/pokemonService';
-import { Spin, Button, Typography, Tag } from 'antd';
+import { Spin, Button, Typography, Tag, Card, Row, Col, Divider, Tabs } from 'antd';
 import ErrorMessage from '../components/ErrorMessage';
 import { ArrowLeftOutlined, StarFilled } from '@ant-design/icons';
 import TypeBadge from '../components/TypeBadge';
+import StatusBar from '../components/StatusBar';
+import StatusChart from '../components/StatusChart';
 
 const { Text, Title } = Typography;
 
@@ -48,6 +50,11 @@ const Details: React.FC = () => {
     : pokemon.sprites.other['official-artwork'].front_default || pokemon.sprites.front_default;
 
   const genus = species?.genera.find((g) => g.language.name === 'en')?.genus || 'Unknown';
+
+  const totalStats = pokemon.stats.reduce((sum, s) => sum + s.base_stat, 0);
+
+  const description = species?.flavor_text_entries.find((e) => e.language.name === 'en')?.flavor_text.replace(/\f/g, ' ') || "No description available";
+
 
   return (
     <div style={{ minHeight: '100vh', background: '#f7f8fc' }}>
@@ -153,7 +160,7 @@ const Details: React.FC = () => {
               {shiny ? 'Shiny' : 'Normal'}
             </Button>
             <img
-              src={image || ''}
+              src={image || 'Imagem indisponível'}
               alt={pokemon.name}
               style={{
                 width: 160,
@@ -165,10 +172,131 @@ const Details: React.FC = () => {
           </div>
         </div>
       </div>
+      <div style={{
+        maxWidth: 900,
+        margin: '-40px auto 40px',
+        padding: '0 16px'
+      }}>
+        <Card
+          style={{
+            border: 'none',
+            borderRadius: 24,
+            boxShadow: '0 8px 40px rgba(0,0,0,0.1)'
+          }}
+          styles={{ body: { padding: '24px 28px' } }}
+        >
+          <Row gutter={16} style={{ marginBottom: 24 }}>
+            {
+              [
+                { label: 'Altura', value: `${(pokemon.height / 10).toFixed(1) || 'Indiponível'} m` },
+                { label: 'Peso', value: `${(pokemon.weight / 10).toFixed(1) || 'Indiponível'} kg` },
+                { label: 'XP Base', value: `${pokemon.base_experience || "Indiponível"}` },
+                { label: 'Status Total', value: `${totalStats || 'Indiponível'}` },
 
+                {}
+              ].map(({ label, value }) => (
+                <Col key={label} span={6}>
+                  <div style={{ textAlign: 'center', padding: '12 8px', background: `${color}22`, borderRadius: 14 }}>
+                    <Text style={{ display: 'block', color: '#999', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.8 }}>
+                      {label}
+                    </Text>
+                    <Text style={{ fontSize: 18, fontWeight: 900, color: color, fontFamily: "'Space Mono', monospace" }}>
+                      {value}
+                    </Text>
+                  </div>
+                </Col>
+              ))
+            }
+          </Row>
+          {description && (
+            <div style={{ marginBottom: 24 }}>
+              <Text style={{ fontSize: 14, fontFamily: "'Nunito', sans-serif", fontStyle: 'italic' }}>
+                {`"${description}"`}
+              </Text>
+              <Divider />
+            </div>
+          )}
+          <Tabs
+            defaultActiveKey='stats'
+            items={[
+              {
+                key: 'stats',
+                label: '📊 stats',
+                children: (
+                  <Row gutter={32}>
+                    <Col xs={24} md={12}>
+                      {pokemon.stats.map((s) => (
+                        <StatusBar key={s.stat.name} name={s.stat.name} value={s.base_stat} color={color} />
+                      ))}
+                    </Col>
+                    <Col xs={24} md={12}>
+                      <StatusChart stats={pokemon.stats} color={color} />
+                    </Col>
+                  </Row>
+                ),
+              },
+              {
+                key: 'abilities',
+                label: `${getEmojiFromColor(color)} abilities`,
+                children: (
+                  <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                    {pokemon.abilities.map((a) => (
+                      <Card
+                        key={a.ability.name}
+                        size='small'
+                        style={{
+                          borderRadius: '12',
+                          border: `1px solid ${a.isHidden ? '#9E9E9E' : `${color}`}`,
+                          background: `${a.isHidden ? '#9E9E9E' : `${color}`}`
+                        }}
+                      >
+                        <Text style={{ fontWeight: 700, textTransform: 'capitalize', fontFamily: "'Nunito', sans-serif" }}>
+                          {a.ability.name}
+                        </Text>
+                        {a.isHidden && (
+                          <Tag style={{ marginLeft: 8, fontSize: 10 }} color='default'>
+                            Hidden
+                          </Tag>
+                        )}
+                      </Card>
+                    ))}
+                  </div>
+                ),
+              },
+              {
+                key: 'moves',
+                label: `⚔️ moves`,
+                children: (
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', maxHeight: 300, overflow: 'auto' }}>
+                    {pokemon.moves.map((m) => (
+                      <Tag
+                        key={m.move.name}
+                        style={{
+                          border: `1px solid ${color}44`,
+                          borderRadius: 20,
+                          fontFamily: "'Nunito', sans-serif",
+                          fontWeight: 600,
+                          fontSize: 12,
+                          textTransform: 'capitalize',
+                        }}
+                      >
+                        {m.move.name}
+                      </Tag>
+                    ))}
+                    {pokemon.moves.length > 40 && (
+                      <Text style={{ color: '#999', fontSize: 12, alignSelf: 'center' }}>
+                        + {pokemon.moves.length - 40} More moves
+                      </Text>
+                    )}
+                  </div>
+                ),
+              },
+            ]}
+          />
+        </Card>
+      </div>
     </div>
-  )
-
+  );
 }
 
-export default Details
+export default Details;
