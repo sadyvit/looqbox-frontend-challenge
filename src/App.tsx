@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import About from './pages/About';
 import Details from './pages/Details';
+import NotFound from './pages/NotFound';
 
 
 
@@ -29,6 +30,7 @@ const App: React.FC = () => (
             <Route path="/home" element={<Home />} />
             <Route path="/details/:name" element={<Details />} />
             <Route path="/about" element={<About />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Content>
       </Layout>
